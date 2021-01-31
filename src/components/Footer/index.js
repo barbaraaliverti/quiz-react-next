@@ -1,10 +1,15 @@
 import styled from 'styled-components';
+
 const FooterWrapper = styled.footer`
   background-color: #00000070;
   padding: 20px;
   display: flex;
   align-items: center;
-  border-radius: 4px; 
+  border-radius: 4px;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  
   img {
     width: 58px;
     margin-right: 23px;
