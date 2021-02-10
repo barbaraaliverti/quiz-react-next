@@ -1,18 +1,18 @@
 {
-    "bg": "https://i2.wp.com/css-tricks.com/wp-content/uploads/2017/06/css-is-awesome-scaled.jpg?resize=1536%2C1208&ssl=1",
+    "bg": "https://i.redd.it/2up2leqn0hq41.jpg",
     "title": "Quiz CSS da Alura",
     "description": "Teste os seus conhecimentos sobre CSS e vamos ver quantos layouts você vai deixar de quebrar",
     "questions": [
       {
-        "image": "https://media.giphy.com/media/xUOxf3yDKCuwpOlT3i/giphy.gif",
-        "title": "Como fazer um seletor por id via CSS?",
-        "description": "Essa é pra aquecer",
+        "image": "https://media.giphy.com/media/YAWwfucvKV1WvA0lod/giphy.gif",
+        "title": "What is Michael Scott's movie called?",
+        "description": "\"Clean up on aisle five\"",
         "answer": 2,
         "alternatives": [
-          ".elemento",
-          "*elemento",
-          "#elemento",
-          "%elemento"
+          "Midnight Threat",
+          "Agent Scarn Vs. Goldenface ",
+          "Threat Level Midnight",
+          "The Scarn"
         ]
       },
       {
@@ -21,6 +21,8 @@
         "description": "Faz tempo em haha",
         "answer": 0,
         "alternatives": [
+           "background: linear-gradient(#e66465, #9198e5);",
+           "background: gradient(#e66465, #9198e5);",
            "background: linear-gradient(#e66465, #9198e5);",
            "background: gradient(#e66465, #9198e5);"
         ]

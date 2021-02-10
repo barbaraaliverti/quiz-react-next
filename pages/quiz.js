@@ -6,6 +6,48 @@ import QuizLogo from '../src/components/QuizLogo';
 import QuizBackground from '../src/components/QuizBackground';
 import QuizContainer from '../src/components/QuizContainer';
 import Button from '../src/components/Button';
+import AlternativesForm from '../src/components/AlternativesForm';
+
+function ResultWidget({ results }) {
+  return (
+    <Widget>
+      <Widget.Header>
+        Results
+      </Widget.Header>
+
+      <Widget.Content>
+        <h1>
+          You got
+          {' '}
+          <strong>
+            {/* {results.reduce((currentSum, currentResult) => {
+              const isRightAnswer = currentResult === true;
+              if (isRightAnswer) {
+                return currentSum + 1;
+              }
+              return currentSum;
+            }, 0)} */}
+            {/* pq o array so tem true/false pode usar o filter */}
+            {results.filter((result) => result).length}
+            {' '}
+          </strong>
+          {' '}
+          {(results.filter((result) => result).length) === 1 ? 'question' : 'questions'}
+          {' '}
+          right!
+        </h1>
+        <ul>
+          {results.map((result, index) => (
+            <li key={`result__${result}`}>
+              {`# ${index + 1}: `}
+              {result ? ' Correct' : ' Wrong'}
+            </li>
+          ))}
+        </ul>
+      </Widget.Content>
+    </Widget>
+  );
+}
 
 function LoadingWidget() {
   return (
@@ -26,8 +68,13 @@ function QuestionWidget({
   totalQuestions,
   questionIndex,
   onSubmit,
+  addResult,
 }) {
+  // selectedAlternative é o estado e setSelectedAlternative é a função que muda o estado
+  const [selectedAlternative, setSelectedAlternative] = React.useState(undefined);
   const questionId = `question__${questionIndex}`;
+  const [isQuestionSubmited, setIsQuestionSubmited] = React.useState(false);
+  const isCorrect = selectedAlternative === question.answer;
   return (
     <Widget>
       <Widget.Header>
@@ -53,25 +100,36 @@ function QuestionWidget({
           {question.description}
         </p>
 
-        <form
+        <AlternativesForm
           onSubmit={(infosDoEvento) => {
             infosDoEvento.preventDefault();
-            onSubmit();
+            setIsQuestionSubmited(true);
+            setTimeout(() => {
+              addResult(isCorrect);
+              onSubmit();
+              setIsQuestionSubmited(false);
+            }, 3 * 1000);
           }}
         >
           {question.alternatives.map((alternative, alternativeIndex) => {
             const alternativeId = `alternative__${alternativeIndex}`;
+            const alternativeStatus = isCorrect ? 'SUCCESS' : 'ERROR';
+            const isSelected = selectedAlternative === alternativeIndex;
 
             return (
               <Widget.Topic
                 as="label" /* recurso do styled components */
+                key={alternativeId} /* React precisa de key */
                 htmlFor={alternativeId}
+                data-selected={isSelected}
+                data-status={alternativeStatus && alternativeStatus}
               >
 
                 <input
                   // style={{ display: 'none' }}
                   id={alternativeId}
                   name={questionId}
+                  onChange={() => setSelectedAlternative(alternativeIndex)}
                   type="radio"
                 />
 
@@ -80,11 +138,12 @@ function QuestionWidget({
             );
           })}
 
-        </form>
-
-        <Button type="submit">
-          Confirmar
-        </Button>
+          <Button type="submit" disabled={Number.isNaN(selectedAlternative)}>
+            Confirmar
+          </Button>
+          {isCorrect && isQuestionSubmited && <p>Correct!</p>}
+          {!isCorrect && isQuestionSubmited && <p>Nope :(</p>}
+        </AlternativesForm>
 
       </Widget.Content>
     </Widget>
@@ -100,10 +159,18 @@ const screenStates = {
 export default function QuizPage() {
   // isso é um hook! define o estado inicial = 'LOADING'
   const [screenState, setScreenState] = React.useState(screenStates.LOADING);
+  const [results, setResults] = React.useState([]);
   const totalQuestions = db.questions.length;
   const [currentQuestion, setCurrentQuestion] = React.useState(0); // é um hook
   const questionIndex = currentQuestion;
   const question = db.questions[questionIndex];
+
+  function addResult(result) {
+    setResults([
+      ...results,
+      result,
+    ]);
+  }
 
   // depois de 1s, vai mudar o estado de 'LOADING' para 'QUIZ':
   React.useEffect(() => {
@@ -120,9 +187,9 @@ export default function QuizPage() {
   // atualizado === willUpdate
   // morre === willUnmount
 
+  // não pode usar ternário pq tem que atribuir a alguma const; ex: const x = coisa? opção1:opção2
   function handleSubmit() {
     const nextQuestion = questionIndex + 1;
-    // não pode usar ternário pq tem que atribuir a alguma const; ex: const x = coisa? opção1:opção2
     if (nextQuestion < totalQuestions) {
       setCurrentQuestion(nextQuestion);
     } else {
@@ -141,11 +208,15 @@ export default function QuizPage() {
             totalQuestions={totalQuestions}
             questionIndex={questionIndex}
             onSubmit={handleSubmit}
+            addResult={addResult}
           />
         )}
 
         {screenState === screenStates.LOADING && <LoadingWidget />}
-        {screenState === screenStates.RESULT && <div>Você acertou X questões, parabéns!</div>}
+        {screenState === screenStates.RESULT
+        && (
+        <ResultWidget results={results} />
+        )}
       </QuizContainer>
     </QuizBackground>
   );
