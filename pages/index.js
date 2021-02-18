@@ -55,13 +55,33 @@ export default function Home() {
 
         <Widget>
           <Widget.Content>
-            <h1>Oioi titulo</h1>
-            <p>Alo clo alo</p>
+            <h1>More quizes</h1>
+            <ul>
+              {db.external.map((linkExterno) => {
+                const [projectName, githubUser] = linkExterno
+                  .replace(/\//g, '')
+                  .replace('https:', '')
+                  .replace('.vercel.app', '')
+                  .split('.');
+
+                return (
+                  <li key={linkExterno}>
+                    <Widget.Topic
+                      // as={Link}
+                      href={`/quiz/${projectName}___${githubUser}`}
+                    >
+                      {`${githubUser}/${projectName}`}
+                    </Widget.Topic>
+                  </li>
+                );
+              })}
+            </ul>
           </Widget.Content>
         </Widget>
+        <Footer />
       </QuizContainer>
       <GitHubCorner projectUrl="https://github.com/barbaraaliverti" />
-      <Footer />
+
     </QuizBackground>
   );
 }
